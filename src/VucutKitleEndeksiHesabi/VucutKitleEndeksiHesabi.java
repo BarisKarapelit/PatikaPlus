@@ -5,10 +5,15 @@ public class VucutKitleEndeksiHesabi {
 
     public String hesapla(){
         String sonuc = Double.toString(VucutKilogrami/(Boy*Boy));
+        // Hata kontrolü
         try{
+            // 1 sn bekle
             Thread.sleep(1000);
+            // Konsolu temizle
             new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            // 1 sn bekle
             Thread.sleep(1000);
+            // Konsola yaz
             return sonuc.substring(0,4);
 
         }catch (Exception e){
