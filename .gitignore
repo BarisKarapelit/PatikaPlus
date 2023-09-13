@@ -27,3 +27,31 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+
+# IntelliJ IDEA files
+.idea/
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Caches directory
+out/
+
+# .iml files
+*.iml
+
+# Project-specific .DS_Store files
+.idea/workspace.xml
+
+# Sensitive or private configuration files
+.idea/dataSources/
+
+# Recommended for ignoring Gradle build output
+.gradle/
+
+# Recommended for ignoring Maven build output
+target/
