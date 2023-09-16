@@ -8,8 +8,11 @@ import java.util.Scanner;
 public class DynamicCentering {
     public static void main(String[] args) {
         String textToCenter = "This is centered text";
-
         // Get the console width
+        setCenteringPage(textToCenter);
+    }
+
+    static void setCenteringPage(String textToCenter) {
         int consoleWidth = getConsoleWidth();
 
         int padding = (consoleWidth - textToCenter.length()) / 2;
