@@ -1,18 +1,18 @@
-import ManavKasaProgrami.ManavKasaProgrami;
-import VucutKitleEndeksiHesabi.VucutKitleEndeksiHesabi;
+import Week1.ManavKasaProgrami.ManavKasaProgrami;
+import Week1.VucutKitleEndeksiHesabi.VucutKitleEndeksiHesabi;
 
 import java.util.Scanner;
 
 public class PatikaPlus {
     public static void main(String[] args) {
-        //VucutKitleEndeksiHesabi();
+        //Week1.VucutKitleEndeksiHesabi();
         ManavKasaProgrami();
 
 
     }
 
     private static void ManavKasaProgrami() {
-        //ManavKasaProgrami object olusturuldu
+        //Week1.ManavKasaProgrami object olusturuldu
         ManavKasaProgrami manavKasaProgrami = new ManavKasaProgrami();
         //Scanner object olusturuldu
         Scanner input = new Scanner(System.in);
