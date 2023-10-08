@@ -21,21 +21,17 @@ public class Match {
                         break;
                     }
                     f1.health = f2.hit(f1);
-                    if (isWin()) {
-                        break;
-                    }
-                    printScore();
                 }else {
                     f1.health = f2.hit(f1);
                     if (isWin()) {
                         break;
                     }
                     f2.health = f1.hit(f2);
-                    if (isWin()) {
-                        break;
-                    }
-                    printScore();
                 }
+                if (isWin()) {
+                    break;
+                }
+                printScore();
             }
         }else {
             System.out.println("Sporcuların ağırlıkları uyuşmuyor.");
