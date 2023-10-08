@@ -1,6 +1,5 @@
 package Week2;
 
-import java.lang.reflect.Array;
 
 public class ACharDrawWithStar {
     public static void main(String[] args) {
