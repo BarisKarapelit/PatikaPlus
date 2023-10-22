@@ -1,34 +1,33 @@
 package week5.PatikaStore;
 
-import java.util.UUID;
-
-public class Product {
-    private  UUID id;
+public abstract class Product {
+    private int id;
     private String name;
     private double price;
-    private int discount;
-    private Brand brandInfo;
-    private int memory;
-    private double dislaySize;
+    private double discountRate;
+    private int unitInStock;
+    private Brand brand;
+    private int storage;
     private int ram;
+    private double screenSize;
 
-    public Product(String name, double price, int discount, Brand brandInfo, int memory, double dislaySize, int ram) {
-        this.id = UUID.randomUUID();
+    public Product(String name, double price, double discountRate, int unitInStock, Brand brand, int storage, int ram, double screenSize) {
+        //this.id=products.size()+1;
         this.name = name;
         this.price = price;
-        this.discount = discount;
-        this.brandInfo = brandInfo;
-        this.memory = memory;
-        this.dislaySize = dislaySize;
+        this.discountRate = discountRate;
+        this.unitInStock = unitInStock;
+        this.brand = brand;
+        this.storage = storage;
         this.ram = ram;
-
+        this.screenSize = screenSize;
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -44,47 +43,19 @@ public class Product {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public Brand getBrand() {
+        return brand;
     }
 
-    public int getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(int discount) {
-        this.discount = discount;
-    }
-
-    public Brand getBrandInfo() {
-        return brandInfo;
-    }
-
-    public void setBrandInfo(Brand brandInfo) {
-        this.brandInfo = brandInfo;
-    }
-
-    public int getMemory() {
-        return memory;
-    }
-
-    public void setMemory(int memory) {
-        this.memory = memory;
-    }
-
-    public double getDislaySize() {
-        return dislaySize;
-    }
-
-    public void setDislaySize(double dislaySize) {
-        this.dislaySize = dislaySize;
+    public int getStorage() {
+        return storage;
     }
 
     public int getRam() {
         return ram;
     }
 
-    public void setRam(int ram) {
-        this.ram = ram;
+    public double getScreenSize() {
+        return screenSize;
     }
 }
