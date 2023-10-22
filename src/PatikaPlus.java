@@ -43,4 +43,7 @@ public class PatikaPlus {
         hesap.SetVucutKilogrami(80.0);
         System.out.println(hesap.hesapla());
     }
+
+    public static class FileReaderAndSumValues {
+    }
 }
