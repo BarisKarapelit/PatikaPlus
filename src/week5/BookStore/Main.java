@@ -22,6 +22,7 @@ public class Main {
         System.out.println("**********************");
 
         TreeSet<Book> sortedSet = new TreeSet<Book>(new BookSorterApp());
+
         sortedSet.addAll(books);
         for (Book book : sortedSet) {
         System.out.println(book.getBookName() + " " + book.getPages() + " " + book.getWriter() + " " + book.getReleaseDate());
