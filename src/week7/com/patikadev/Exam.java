@@ -15,10 +15,10 @@ public class Exam extends JFrame {
 
     public Exam() {
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            if ("Mimbus".equals(info.getName())) {
+            if (true) {
                 try {
                     System.out.println(info.getName() + "=>" + info.getClassName());
-                    UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                   UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
