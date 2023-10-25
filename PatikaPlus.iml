@@ -12,6 +12,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="mysql-connector-j-8.1.0" level="project" />
+    <orderEntry type="library" name="syntheticaOrangeMetallic" level="project" />
+    <orderEntry type="library" name="syntheticaBlackEye" level="project" />
   </component>
   <component name="SonarLintModuleSettings">
     <option name="uniqueId" value="b53769e2-fe73-4324-b772-a8f02b504a87" />
