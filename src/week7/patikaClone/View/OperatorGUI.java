@@ -6,6 +6,8 @@ import week7.patikaClone.Model.Operator;
 import week7.patikaClone.Model.User;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +27,8 @@ public class OperatorGUI extends JFrame {
     private JTextField field_user_name;
     private JComboBox cbmb_user_type;
     private JButton btn_user_add;
+    private JTextField field_user_id;
+    private JButton btn_user_delete;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
     private final Operator operator;
@@ -42,7 +46,16 @@ public class OperatorGUI extends JFrame {
         lbl_welcome.setText("Hosgeldiniz " + operator.getName());
 
         //Model for user list
-        mdl_user_list = new DefaultTableModel();
+        mdl_user_list = new DefaultTableModel(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0)
+                {
+                    return false;//This causes all cells to be not editable
+                }
+                return false;
+            }
+        };
         Object[] col_user_list = {"ID", "Ad Soyad", "Kullanici Adi", "Sifre", "Tip"};
         mdl_user_list.setColumnIdentifiers(col_user_list);
         Object[] row_user_list = new Object[col_user_list.length];
@@ -56,6 +69,15 @@ public class OperatorGUI extends JFrame {
         tbl_user_list.setModel(mdl_user_list);
         tbl_user_list.getTableHeader().setReorderingAllowed(false);
 
+        tbl_user_list.getSelectionModel().addListSelectionListener(e -> {
+            try {
+                String selectedData = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString();
+                field_user_id.setText(selectedData);
+            }catch (Exception exception){
+                System.out.println(exception.getMessage());
+            }
+        });
+
         btn_user_add.addActionListener(e -> {
             if (Helper.isFieldEmpty(field_user_name)|| Helper.isFieldEmpty(field_user_password) || Helper.isFieldEmpty(field_username)) {
                 Helper.showMessage("Lutfen tum alanlari doldurunuz", "UYARI", JOptionPane.ERROR_MESSAGE);
@@ -68,12 +90,29 @@ public class OperatorGUI extends JFrame {
                     Helper.showMessage("Kullanici eklendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("User add");
                     addTableList(row_user_list);
-                } else {
-                    System.out.println("User not add");
-                    Helper.showMessage("Kullanici eklenemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                    field_user_password.setText(null);
+                    field_user_name.setText(null);
+                    field_username.setText(null);
+
                 }
 
             }
+        });
+        btn_user_delete.addActionListener(e -> {
+            if (Helper.isFieldEmpty(field_user_id)) {
+                Helper.showMessage("Lutfen ID giriniz", "UYARI", JOptionPane.ERROR_MESSAGE);
+            } else {
+                int id = Integer.parseInt(field_user_id.getText());
+                if (User.delete(id)) {
+                    Helper.showMessage("Kullanici silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("User delete");
+                    addTableList(row_user_list);
+                    field_user_id.setText(null);
+                }else {
+                    Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
         });
     }
 

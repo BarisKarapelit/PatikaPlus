@@ -4,6 +4,7 @@ import week7.patikaClone.Helper.DBConnector;
 import week7.patikaClone.Helper.Helper;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -68,26 +69,31 @@ public class User {
     public static ArrayList<User> getList() {
         ArrayList<User> userList = new ArrayList<>();
         String query = "SELECT * FROM user";
-        User user;
-        try {
-            Statement statement = DBConnector.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+
+        try (Statement statement = DBConnector.getConnection().createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            User user;
             while (resultSet.next()) {
-                user = new User();
-                user.setId(resultSet.getInt("id"));
-                user.setName(resultSet.getString("name"));
-                user.setUsername(resultSet.getString("username"));
-                user.setPassword(resultSet.getString("password"));
-                user.setType(resultSet.getString("type"));
+                user = setUser(resultSet);
                 userList.add(user);
             }
-            statement.close();
-            resultSet.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return userList;
     }
+
+    private static User setUser(ResultSet resultSet) throws SQLException {
+        User user;
+        user = new User();
+        user.setId(resultSet.getInt("id"));
+        user.setName(resultSet.getString("name"));
+        user.setUsername(resultSet.getString("username"));
+        user.setPassword(resultSet.getString("password"));
+        user.setType(resultSet.getString("type"));
+        return user;
+    }
+
 
     public static boolean add(String name, String username, String password, String type) {
         String query = "INSERT INTO user (name, username, password, type) VALUES(" +
@@ -104,8 +110,11 @@ public class User {
         }
         try {
             Statement statement = DBConnector.getConnection().createStatement();
-            statement.close();
-            return statement.executeUpdate(query) > 0;
+            int response = statement.executeUpdate(query);
+            if (response < 0) {
+                Helper.showMessage("Kullanici eklenemedi", "UYARI", 2);
+            }
+            return response > 0;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -114,22 +123,35 @@ public class User {
 
     public static User getFetch(String username, String password) {
         User user = null;
-        String query = "SELECT * FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
+        String query = "SELECT * FROM user WHERE username = '" + username + "'";
         try {
             Statement statement = DBConnector.getConnection().createStatement();
             ResultSet resultSet = statement.executeQuery(query);
             if (resultSet.next()) {
-                user = new User();
-                user.setId(resultSet.getInt("id"));
-                user.setName(resultSet.getString("name"));
-                user.setUsername(resultSet.getString("username"));
-                user.setPassword(resultSet.getString("password"));
-                user.setType(resultSet.getString("type"));
+                user = setUser(resultSet);
+                if (!user.getPassword().equals(password)) {
+                    System.out.println("Different password");
+                }
             }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    public static boolean delete(int id) {
+        String query = "DELETE FROM user WHERE id = " + id;
+        try {
+            Statement statement = DBConnector.getConnection().createStatement();
+            int response = statement.executeUpdate(query);
+            return response > 0;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return user;
+        return true;
     }
+
+
 }
