@@ -8,6 +8,7 @@ import week7.patikaClone.Model.User;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,14 +47,13 @@ public class OperatorGUI extends JFrame {
         lbl_welcome.setText("Hosgeldiniz " + operator.getName());
 
         //Model for user list
-        mdl_user_list = new DefaultTableModel(){
+        mdl_user_list = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
-                if (column == 0)
-                {
+                if (column == 0) {
                     return false;//This causes all cells to be not editable
                 }
-                return false;
+                return true;
             }
         };
         Object[] col_user_list = {"ID", "Ad Soyad", "Kullanici Adi", "Sifre", "Tip"};
@@ -73,13 +73,39 @@ public class OperatorGUI extends JFrame {
             try {
                 String selectedData = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString();
                 field_user_id.setText(selectedData);
-            }catch (Exception exception){
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+        });
+        tbl_user_list.getModel().addTableModelListener(e -> {
+            try {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    String user_name = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 1).toString();
+                    String user_username = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 2).toString();
+                    String user_password = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 3).toString();
+                    String user_type = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 4).toString();
+                    int user_id = Integer.parseInt(tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString());
+                    User user = new User();
+                    user.setId(user_id);
+                    user.setName(user_name);
+                    user.setUsername(user_username);
+                    user.setPassword(user_password);
+                    user.setType(user_type);
+                   if (User.update(user)) {
+                       Helper.showMessage("Kullanici guncellendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                       System.out.println("User update");
+                       addTableList(row_user_list);
+                   } else {
+                       Helper.showMessage("Kullanici guncellenemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                   }
+                }
+            } catch (Exception exception) {
                 System.out.println(exception.getMessage());
             }
         });
 
         btn_user_add.addActionListener(e -> {
-            if (Helper.isFieldEmpty(field_user_name)|| Helper.isFieldEmpty(field_user_password) || Helper.isFieldEmpty(field_username)) {
+            if (Helper.isFieldEmpty(field_user_name) || Helper.isFieldEmpty(field_user_password) || Helper.isFieldEmpty(field_username)) {
                 Helper.showMessage("Lutfen tum alanlari doldurunuz", "UYARI", JOptionPane.ERROR_MESSAGE);
             } else {
                 String name = field_user_name.getText();
@@ -108,7 +134,7 @@ public class OperatorGUI extends JFrame {
                     System.out.println("User delete");
                     addTableList(row_user_list);
                     field_user_id.setText(null);
-                }else {
+                } else {
                     Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
                 }
             }
@@ -120,7 +146,7 @@ public class OperatorGUI extends JFrame {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_user_list.getModel();
         clearModel.setRowCount(0);
         for (User user : User.getList()) {
-            int i=0;
+            int i = 0;
             row_user_list[i++] = user.getId();
             row_user_list[i++] = user.getName();
             row_user_list[i++] = user.getUsername();

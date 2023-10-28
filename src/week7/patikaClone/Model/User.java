@@ -153,5 +153,22 @@ public class User {
         return true;
     }
 
+    public static boolean update(User user) {
+        String query = "UPDATE user SET " +
+                "name = '" + user.getName() + "'," +
+                "username = '" + user.getUsername() + "'," +
+                "password = '" + user.getPassword() + "'," +
+                "type = '" + user.getType() + "'" +
+                "WHERE id = " + user.getId();
+        try {
+            Statement statement = DBConnector.getConnection().createStatement();
+            int response = statement.executeUpdate(query);
+            return response > 0;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
+    }
+
 
 }
