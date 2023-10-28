@@ -6,12 +6,11 @@ import week7.patikaClone.Model.Operator;
 import week7.patikaClone.Model.User;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class OperatorGUI extends JFrame {
     private JPanel wrapper;
@@ -30,6 +29,10 @@ public class OperatorGUI extends JFrame {
     private JButton btn_user_add;
     private JTextField field_user_id;
     private JButton btn_user_delete;
+    private JTextField fld_search_user_name;
+    private JTextField fld_search_username;
+    private JComboBox cmb_search_user_type;
+    private JButton btn_user_search;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
     private final Operator operator;
@@ -43,7 +46,6 @@ public class OperatorGUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setTitle(Contanst.APP_NAME + " - Operator Panel");
         setVisible(true);
-
         lbl_welcome.setText("Hosgeldiniz " + operator.getName());
 
         //Model for user list
@@ -80,24 +82,20 @@ public class OperatorGUI extends JFrame {
         tbl_user_list.getModel().addTableModelListener(e -> {
             try {
                 if (e.getType() == TableModelEvent.UPDATE) {
-                    String user_name = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 1).toString();
-                    String user_username = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 2).toString();
-                    String user_password = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 3).toString();
-                    String user_type = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 4).toString();
+                    String user_name, user_username, user_password, user_type;
+                    user_name = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 1).toString();
+                    user_username = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 2).toString();
+                    user_password = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 3).toString();
+                    user_type = tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 4).toString();
                     int user_id = Integer.parseInt(tbl_user_list.getValueAt(tbl_user_list.getSelectedRow(), 0).toString());
-                    User user = new User();
-                    user.setId(user_id);
-                    user.setName(user_name);
-                    user.setUsername(user_username);
-                    user.setPassword(user_password);
-                    user.setType(user_type);
-                   if (User.update(user)) {
-                       Helper.showMessage("Kullanici guncellendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
-                       System.out.println("User update");
-                       addTableList(row_user_list);
-                   } else {
-                       Helper.showMessage("Kullanici guncellenemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
-                   }
+                    User user = new User(user_id, user_name, user_username, user_password, user_type);
+                    if (User.update(user)) {
+                        Helper.showMessage("Kullanici guncellendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                        System.out.println("User update");
+                        addTableList(row_user_list);
+                    } else {
+                        addTableList(row_user_list);
+                    }
                 }
             } catch (Exception exception) {
                 System.out.println(exception.getMessage());
@@ -140,6 +138,18 @@ public class OperatorGUI extends JFrame {
             }
 
         });
+        btn_user_search.addActionListener(e -> {
+            String name = fld_search_user_name.getText();
+            String username = fld_search_username.getText();
+            String type = cmb_search_user_type.getSelectedItem().toString();
+            System.out.println(name + " " + username + " " + type);
+            addTableList(User.search(name, username, type));
+            System.out.println("User search");
+        });
+        btn_logout.addActionListener(e -> {
+            dispose();
+
+        });
     }
 
     private void addTableList(Object[] row_user_list) {
@@ -155,6 +165,32 @@ public class OperatorGUI extends JFrame {
             mdl_user_list.addRow(row_user_list);
         }
     }
+
+    private void addTableList(ArrayList<User> userArrayList) {
+        System.out.println("Search Start");
+        try {
+            DefaultTableModel clearModel = (DefaultTableModel) tbl_user_list.getModel();
+            clearModel.setRowCount(0);
+
+            for (User user : userArrayList) {
+                int i = 0; // Reset i for each user
+                Object[] row_user_list =new Object[userArrayList.size()==5?userArrayList.size():5]; // Create a new row array for each user
+
+                row_user_list[i++] = user.getId();
+                row_user_list[i++] = user.getName();
+                row_user_list[i++] = user.getUsername();
+                row_user_list[i++] = user.getPassword();
+                row_user_list[i++] = user.getType();
+
+                mdl_user_list.addRow(row_user_list);
+            }
+            System.out.println("For End");
+        } catch (Exception e) {
+            System.out.println("Search Error");
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     public static void main(String[] args) {
         Helper.setLayout();

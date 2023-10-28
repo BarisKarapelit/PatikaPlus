@@ -1,5 +1,6 @@
 package week7.patikaClone.Model;
 
+import week7.patikaClone.Helper.Contanst;
 import week7.patikaClone.Helper.DBConnector;
 import week7.patikaClone.Helper.Helper;
 
@@ -67,9 +68,10 @@ public class User {
     }
 
     public static ArrayList<User> getList() {
-        ArrayList<User> userList = new ArrayList<>();
-        String query = "SELECT * FROM user";
+        return databaseRun(Contanst.LIST_QUERY, new ArrayList<>());
+    }
 
+    private static ArrayList<User> databaseRun(String query, ArrayList<User> userList) {
         try (Statement statement = DBConnector.getConnection().createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
             User user;
@@ -160,6 +162,23 @@ public class User {
                 "password = '" + user.getPassword() + "'," +
                 "type = '" + user.getType() + "'" +
                 "WHERE id = " + user.getId();
+        User findUser = User.getFetch(user.getUsername(), user.getPassword());
+        ArrayList<String> userTypes = new ArrayList<>() {
+            {
+                add("operator");
+                add("student");
+                add("educator");
+            }
+        };
+        if (findUser != null && findUser.getId() != user.getId()) {
+            Helper.showMessage("Bu kullanici zaten var", "UYARI", 2);
+            System.out.println("User already exists");
+            return false;
+        } else if (!userTypes.contains(user.getType())) {
+            Helper.showMessage("Kullanici tipi gecersiz", "UYARI", 2);
+            System.out.println("User type is invalid");
+            return false;
+        }
         try {
             Statement statement = DBConnector.getConnection().createStatement();
             int response = statement.executeUpdate(query);
@@ -168,6 +187,16 @@ public class User {
             System.out.println(e.getMessage());
         }
         return true;
+    }
+
+    public static ArrayList<User> search(String name, String username, String type) {
+        String searchQuery = Contanst.SEARCH_QUERY;
+        searchQuery = searchQuery.replace("{{name}}", name != null ? name : "");
+        searchQuery = searchQuery.replace("{{username}}", username != null ? username : "");
+        searchQuery += !type.isEmpty() ? "AND type = '{{type}}' " : " ";
+        searchQuery = searchQuery.replace("{{type}}", type != null ? type : "");
+        String expected = searchQuery; // Set the expected variable to the updated searchQuery
+        return databaseRun(searchQuery, new ArrayList<>());
     }
 
 
