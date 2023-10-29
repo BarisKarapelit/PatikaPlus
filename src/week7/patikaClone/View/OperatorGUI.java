@@ -2,18 +2,19 @@ package week7.patikaClone.View;
 
 import week7.patikaClone.Helper.Contanst;
 import week7.patikaClone.Helper.Helper;
-import week7.patikaClone.Model.Operator;
-import week7.patikaClone.Model.Patika;
-import week7.patikaClone.Model.User;
+import week7.patikaClone.Model.*;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class OperatorGUI extends JFrame {
     private JPanel wrapper;
-    private JTabbedPane tab_operator;
+    private JTabbedPane pnl_course_list;
     private JLabel lbl_welcome;
     private JPanel pnl_top;
     private JButton btn_logout;
@@ -35,11 +36,27 @@ public class OperatorGUI extends JFrame {
     private JPanel pnl_patika_list;
     private JScrollPane scrl_patika_lsit;
     private JTable tbl_patika_list;
+    private JPanel pnl_patika_add;
+    private JTextField fld_patika_name;
+    private JButton btn_patika_add;
+    private JLabel fld_app_version;
+    private JPanel pnl_user_top;
+    private JScrollPane scrl_course_list;
+    private JTable tbl_course_list;
+    private JPanel pnl_course_add;
+    private JTextField fld_course_name;
+    private JTextField fld_course_lang;
+    private JComboBox cmb_course_patika;
+    private JComboBox cmb_course_user;
+    private JButton btn_course_add;
     private DefaultTableModel mdl_user_list;
     private Object[] row_user_list;
     private final Operator operator;
     private DefaultTableModel mdl_patika_list;
     private Object[] row_patika_list;
+    private JPopupMenu patikaMenu;
+    private DefaultTableModel mdl_course_list;
+    private Object[] row_course_list;
 
     public OperatorGUI(Operator operator) {
         this.operator = operator;
@@ -51,6 +68,8 @@ public class OperatorGUI extends JFrame {
         setTitle(Contanst.APP_NAME + " - Operator Panel");
         setVisible(true);
         lbl_welcome.setText("Hosgeldiniz " + operator.getName());
+        fld_app_version.setText(Contanst.APP_VERSION);
+
 
         //Model for user list
         mdl_user_list = new DefaultTableModel() {
@@ -62,6 +81,7 @@ public class OperatorGUI extends JFrame {
                 return true;
             }
         };
+
         Object[] col_user_list = {"ID", "Ad Soyad", "Kullanici Adi", "Sifre", "Tip"};
         mdl_user_list.setColumnIdentifiers(col_user_list);
         Object[] row_user_list = new Object[col_user_list.length];
@@ -74,6 +94,11 @@ public class OperatorGUI extends JFrame {
         addTableList(row_user_list);
         tbl_user_list.setModel(mdl_user_list);
         tbl_user_list.getTableHeader().setReorderingAllowed(false);
+        tbl_user_list.getColumnModel().getColumn(0).setMinWidth(25);
+        for (int i = 1; i < tbl_user_list.getColumnCount(); i++) {
+            tbl_user_list.getColumnModel().getColumn(i).setMinWidth(100);
+        }
+
 
         tbl_user_list.getSelectionModel().addListSelectionListener(e -> {
             try {
@@ -108,14 +133,75 @@ public class OperatorGUI extends JFrame {
         });
 
         //Model for patika list
+        patikaMenu = new JPopupMenu();
+        JMenuItem updatePatika = new JMenuItem("Guncelle");
+        JMenuItem deletePatika = new JMenuItem("Sil");
+        patikaMenu.add(updatePatika);
+        patikaMenu.add(deletePatika);
+        updatePatika.addActionListener(e -> {
+            int selectedRow = tbl_patika_list.getSelectedRow();
+            int id = Integer.parseInt(tbl_patika_list.getValueAt(selectedRow, 0).toString());
+            UpdatePatika updatePatikaGUI = new UpdatePatika(Patika.getFetch(id));
+            updatePatikaGUI.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                    loadPatikaList();
+                }
+            });
+
+        });
+        deletePatika.addActionListener(e -> {
+            if (Helper.confirm("Emin misiniz?", "UYARI")) {
+                int selectedRow = tbl_patika_list.getSelectedRow();
+                int id = Integer.parseInt(tbl_patika_list.getValueAt(selectedRow, 0).toString());
+                if (Patika.delete(id)) {
+                    Helper.showMessage("Patika silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("Patika delete");
+                    loadPatikaList();
+                } else {
+                    Helper.showMessage("Patika silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
         mdl_patika_list = new DefaultTableModel();
         Object[] col_patika_list = {"ID", "Patika Adi"};
         mdl_patika_list.setColumnIdentifiers(col_patika_list);
         row_patika_list = new Object[col_patika_list.length];
         loadPatikaList();
         tbl_patika_list.setModel(mdl_patika_list);
+        tbl_patika_list.setComponentPopupMenu(patikaMenu);
+        tbl_patika_list.getTableHeader().setReorderingAllowed(false);
+        tbl_patika_list.getColumnModel().getColumn(0).setMaxWidth(120);
+        tbl_patika_list.getColumnModel().getColumn(0).setMinWidth(25);
 
+        tbl_patika_list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                System.out.println("Mouse Pressed");
+                Point point = e.getPoint();
+                int selectedRow = tbl_patika_list.rowAtPoint(point);
+                tbl_patika_list.setRowSelectionInterval(selectedRow, selectedRow);
+
+            }
+        });
         //Model for patika list
+        //Model for course list
+
+        mdl_course_list = new DefaultTableModel();
+        Object[] col_course_list = {"ID", "Ders Adi", "Patika", "Egitmen"};
+        mdl_course_list.setColumnIdentifiers(col_course_list);
+        row_course_list = new Object[col_course_list.length];
+        loadCourseList();
+        tbl_course_list.setModel(mdl_course_list);
+        tbl_course_list.getTableHeader().setReorderingAllowed(false);
+        for (int i = 1; i < tbl_course_list.getColumnCount(); i++) {
+            tbl_course_list.getColumnModel().getColumn(i).setMinWidth(75);
+        }
+        for (Patika patika : Patika.getList()) {
+            cmb_course_patika.addItem(new Item(patika.getId(), patika.getName()));
+        }
+
+        //Model for course list
         btn_user_add.addActionListener(e -> {
             if (Helper.isFieldEmpty(field_user_name) || Helper.isFieldEmpty(field_user_password) || Helper.isFieldEmpty(field_username)) {
                 Helper.showMessage("Lutfen tum alanlari doldurunuz", "UYARI", JOptionPane.ERROR_MESSAGE);
@@ -140,15 +226,17 @@ public class OperatorGUI extends JFrame {
             if (Helper.isFieldEmpty(field_user_id)) {
                 Helper.showMessage("Lutfen ID giriniz", "UYARI", JOptionPane.ERROR_MESSAGE);
             } else {
-                int id = Integer.parseInt(field_user_id.getText());
-                if (User.delete(id)) {
-                    Helper.showMessage("Kullanici silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("User delete");
-                    addTableList(row_user_list);
-                    field_user_id.setText(null);
-                } else {
-                    Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
-                }
+               if (Helper.confirm("Emin misiniz?", "UYARI")){
+                   int id = Integer.parseInt(field_user_id.getText());
+                   if (User.delete(id)) {
+                       Helper.showMessage("Kullanici silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                       System.out.println("User delete");
+                       addTableList(row_user_list);
+                       field_user_id.setText(null);
+                   } else {
+                       Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                   }
+               }
             }
 
         });
@@ -164,18 +252,47 @@ public class OperatorGUI extends JFrame {
             dispose();
 
         });
+        btn_patika_add.addActionListener(e -> {
+            if (Helper.isFieldEmpty(fld_patika_name)) {
+                Helper.showMessage("Lutfen tum alanlari doldurunuz", "UYARI", JOptionPane.ERROR_MESSAGE);
+            } else {
+                String name = fld_patika_name.getText();
+                if (Patika.addPatika(name)) {
+                    Helper.showMessage("Patika eklendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("Patika add");
+                    loadPatikaList();
+                    fld_patika_name.setText(null);
+                }else {
+                    Helper.showMessage("Patika eklenemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+    }
+
+    private void loadCourseList() {
+        DefaultTableModel clearModel = (DefaultTableModel) tbl_course_list.getModel();
+        clearModel.setRowCount(0);
+        int i;
+        for (Course course : Course.getList()) {
+            i = 0;
+            row_course_list[i++] = course.getId();
+            row_course_list[i++] = course.getName();
+            row_course_list[i++] = course.getPatika().getName();
+            row_course_list[i++] = course.getEducator().getName();
+            mdl_course_list.addRow(row_course_list);
+        }
     }
 
     private void loadPatikaList() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_patika_list.getModel();
         clearModel.setRowCount(0);
         int i;
-        for(Patika patika : Patika.getList()){
-           i = 0;
-           row_patika_list[i++] = patika.getId();
-           row_patika_list[i++] = patika.getName();
-           mdl_patika_list.addRow(row_patika_list);
-       }
+        for (Patika patika : Patika.getList()) {
+            i = 0;
+            row_patika_list[i++] = patika.getId();
+            row_patika_list[i++] = patika.getName();
+            mdl_patika_list.addRow(row_patika_list);
+        }
     }
 
     private void addTableList(Object[] row_user_list) {
@@ -201,7 +318,6 @@ public class OperatorGUI extends JFrame {
             for (User user : userArrayList) {
                 int i = 0; // Reset i for each user
                 Object[] row_user_list = new Object[userArrayList.size() == 5 ? userArrayList.size() : 5]; // Create a new row array for each user
-
                 row_user_list[i++] = user.getId();
                 row_user_list[i++] = user.getName();
                 row_user_list[i++] = user.getUsername();

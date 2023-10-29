@@ -3,6 +3,7 @@ package week7.patikaClone.Model;
 import week7.patikaClone.Helper.Contanst;
 import week7.patikaClone.Helper.DBConnector;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,6 +16,18 @@ public class Patika {
     public Patika(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static boolean delete(int id) {
+        String query = Contanst.DELETE_QUERY_PATIKA;
+        try {
+            PreparedStatement preparedStatement = DBConnector.getConnection().prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate() != -1;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
     }
 
     public int getId() {
@@ -32,19 +45,62 @@ public class Patika {
     public void setName(String name) {
         this.name = name;
     }
-    public static ArrayList<Patika> getList(){
+
+    public static ArrayList<Patika> getList() {
         ArrayList<Patika> patikaArrayList = new ArrayList<>();
         Patika patikaObject;
         try {
             Statement statement = DBConnector.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery(Contanst.LIST_QUERY_PATIKA);
-            while (resultSet.next()){
-                patikaObject = new Patika(resultSet.getInt("id"),resultSet.getString("name"));
+            ResultSet resultSet = statement.executeQuery(Contanst.LIST_QUERY("patika"));
+            while (resultSet.next()) {
+                patikaObject = new Patika(resultSet.getInt("id"), resultSet.getString("name"));
                 patikaArrayList.add(patikaObject);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return patikaArrayList;
+    }
+
+    public static boolean addPatika(String name) {
+        String query = Contanst.ADD_QUERY_PATIKA;
+        try {
+            PreparedStatement preparedStatement = DBConnector.getConnection().prepareStatement(query);
+            preparedStatement.setString(1, name);
+            return preparedStatement.executeUpdate() != -1;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
+    }
+
+    public static boolean updatePatika(int id, String name) {
+        String query = Contanst.UPDATE_QUERY_PATIKA;
+        try {
+            PreparedStatement preparedStatement = DBConnector.getConnection().prepareStatement(query);
+            preparedStatement.setString(1, name);
+            preparedStatement.setInt(2, id);
+            return preparedStatement.executeUpdate() != -1;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
+    }
+
+    public static Patika getFetch(int id) {
+        Patika patika = null;
+        String query = "SELECT * FROM patika WHERE id = '" + id + "'";
+        try {
+            Statement statement = DBConnector.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            if (resultSet.next()) {
+                patika = new Patika(resultSet.getInt("id"), resultSet.getString("name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return patika;
     }
 }

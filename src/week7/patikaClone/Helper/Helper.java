@@ -56,4 +56,9 @@ public class Helper {
         btn.setFocusable(true);
         return btn;
     }
+
+    public static boolean confirm(String message, String title) {
+        optionPageTR();
+        return JOptionPane.showConfirmDialog(null, message, title, JOptionPane.YES_NO_OPTION) == 0;
+    }
 }

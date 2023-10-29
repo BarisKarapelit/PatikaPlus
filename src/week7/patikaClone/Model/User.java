@@ -68,7 +68,7 @@ public class User {
     }
 
     public static ArrayList<User> getList() {
-        return databaseRun(Contanst.LIST_QUERY, new ArrayList<>());
+        return databaseRun(Contanst.LIST_QUERY("user"), new ArrayList<>());
     }
 
     private static ArrayList<User> databaseRun(String query, ArrayList<User> userList) {
@@ -134,6 +134,22 @@ public class User {
                 if (!user.getPassword().equals(password)) {
                     System.out.println("Different password");
                 }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+    public static User getFetch(int id) {
+        User user = null;
+        String query = "SELECT * FROM user WHERE id = '" + id + "'";
+        try {
+            Statement statement = DBConnector.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            if (resultSet.next()) {
+                user = setUser(resultSet);
             }
 
         } catch (SQLException e) {
