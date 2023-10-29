@@ -8,6 +8,7 @@ public class Contanst {
     public static final String DB_USERNAME = "u621395494_patikadev";
     public static final String DB_PASSWORD = "04603Sb312.";
     public static final String LIST_QUERY = "SELECT * FROM user";
+    public static final String LIST_QUERY_PATIKA = "SELECT * FROM patika";
     public static final String SEARCH_QUERY = "SELECT * FROM user WHERE name LIKE '%{{name}}%' " +
             "AND username LIKE '%{{username}}%' ";
 }
