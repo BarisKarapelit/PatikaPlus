@@ -103,4 +103,20 @@ public class Patika {
 
         return patika;
     }
+    public static Patika getFetch(String name){
+        Patika patika = null;
+        String query = "SELECT * FROM patika WHERE name = '" + name + "'";
+        try {
+            Statement statement = DBConnector.getConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            if (resultSet.next()) {
+                patika = new Patika(resultSet.getInt("id"), resultSet.getString("name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return patika;
+    }
 }

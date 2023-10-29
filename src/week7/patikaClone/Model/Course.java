@@ -49,6 +49,23 @@ public class Course {
         return courseList;
     }
 
+    public static boolean add(int patika_id, int user_id, String name, String language) {
+        String query = Contanst.INSERT_QUERY("course",
+                new String[] {"patika_id", "user_id", "name", "language"},
+                String.valueOf(patika_id),
+                String.valueOf(user_id),
+                name,
+                language);
+        try {
+            Statement statement = DBConnector.getConnection().createStatement();
+            statement.executeUpdate(query);
+            return true;
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
     public int getId() {
         return id;
     }

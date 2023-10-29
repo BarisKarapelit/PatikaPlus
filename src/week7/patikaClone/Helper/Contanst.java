@@ -16,4 +16,22 @@ public class Contanst {
     public static String LIST_QUERY(String table) {
         return "SELECT * FROM " + table;
     }
+
+    public static String INSERT_QUERY(String table, String[] columns, String... values) {
+        String query = "INSERT INTO " + table + " (";
+        for (String column : columns) {
+            query += column + ",";
+        }
+        query = query.substring(0, query.length() - 1);
+        query += ") VALUES (";
+        for (String value : values) {
+            query += "'" + value + "',";
+        }
+        query = query.substring(0, query.length() - 1);
+        query += ")";
+        return query;
+    }
+
+
+
 }

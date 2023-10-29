@@ -146,6 +146,7 @@ public class OperatorGUI extends JFrame {
                 @Override
                 public void windowClosed(java.awt.event.WindowEvent windowEvent) {
                     loadPatikaList();
+                    loadPatikaComboBox();
                 }
             });
 
@@ -158,6 +159,7 @@ public class OperatorGUI extends JFrame {
                     Helper.showMessage("Patika silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("Patika delete");
                     loadPatikaList();
+                    loadPatikaComboBox();
                 } else {
                     Helper.showMessage("Patika silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
                 }
@@ -190,16 +192,15 @@ public class OperatorGUI extends JFrame {
         mdl_course_list = new DefaultTableModel();
         Object[] col_course_list = {"ID", "Ders Adi", "Patika", "Egitmen"};
         mdl_course_list.setColumnIdentifiers(col_course_list);
-        row_course_list = new Object[col_course_list.length];
+        row_course_list = new Object[col_course_list.length==4?col_course_list.length:4];
         loadCourseList();
         tbl_course_list.setModel(mdl_course_list);
         tbl_course_list.getTableHeader().setReorderingAllowed(false);
         for (int i = 1; i < tbl_course_list.getColumnCount(); i++) {
             tbl_course_list.getColumnModel().getColumn(i).setMinWidth(75);
         }
-        for (Patika patika : Patika.getList()) {
-            cmb_course_patika.addItem(new Item(patika.getId(), patika.getName()));
-        }
+        loadPatikaComboBox();
+        loadUserComboBox();
 
         //Model for course list
         btn_user_add.addActionListener(e -> {
@@ -226,17 +227,17 @@ public class OperatorGUI extends JFrame {
             if (Helper.isFieldEmpty(field_user_id)) {
                 Helper.showMessage("Lutfen ID giriniz", "UYARI", JOptionPane.ERROR_MESSAGE);
             } else {
-               if (Helper.confirm("Emin misiniz?", "UYARI")){
-                   int id = Integer.parseInt(field_user_id.getText());
-                   if (User.delete(id)) {
-                       Helper.showMessage("Kullanici silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
-                       System.out.println("User delete");
-                       addTableList(row_user_list);
-                       field_user_id.setText(null);
-                   } else {
-                       Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
-                   }
-               }
+                if (Helper.confirm("Emin misiniz?", "UYARI")) {
+                    int id = Integer.parseInt(field_user_id.getText());
+                    if (User.delete(id)) {
+                        Helper.showMessage("Kullanici silindi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                        System.out.println("User delete");
+                        addTableList(row_user_list);
+                        field_user_id.setText(null);
+                    } else {
+                        Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
 
         });
@@ -261,9 +262,26 @@ public class OperatorGUI extends JFrame {
                     Helper.showMessage("Patika eklendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("Patika add");
                     loadPatikaList();
+                    loadPatikaComboBox();
                     fld_patika_name.setText(null);
-                }else {
+                } else {
                     Helper.showMessage("Patika eklenemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        btn_course_add.addActionListener(e -> {
+            if (Helper.isFieldEmpty(fld_course_name) || Helper.isFieldEmpty(fld_course_lang)) {
+                Helper.showMessage("Lutfen tum alanlari doldurunuz", "UYARI", JOptionPane.ERROR_MESSAGE);
+            } else {
+                Item patikaItem = (Item) cmb_course_patika.getSelectedItem();
+                Item userItem = (Item) cmb_course_user.getSelectedItem();
+                if (Course.add(userItem.getKey(), patikaItem.getKey(), fld_course_name.getText(), fld_course_lang.getText())) {
+                    Helper.showMessage("Ders eklendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("Course add");
+                    loadCourseList();
+                    fld_course_name.setText(null);
+                    fld_course_lang.setText(null);
+
                 }
             }
         });
@@ -333,6 +351,21 @@ public class OperatorGUI extends JFrame {
         }
     }
 
+    public void loadPatikaComboBox() {
+        cmb_course_patika.removeAllItems();
+        for (Patika patika : Patika.getList()) {
+            cmb_course_patika.addItem(new Item(patika.getId(), patika.getName()));
+        }
+    }
+
+    public void loadUserComboBox() {
+        cmb_course_user.removeAllItems();
+        for (User user : User.getList()) {
+            if (user.getType().equals("educator")) {
+                cmb_course_user.addItem(new Item(user.getId(), user.getName()));
+            }
+        }
+    }
 
     public static void main(String[] args) {
         Helper.setLayout();
