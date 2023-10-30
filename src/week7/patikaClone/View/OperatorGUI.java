@@ -275,6 +275,14 @@ public class OperatorGUI extends JFrame {
             } else {
                 Item patikaItem = (Item) cmb_course_patika.getSelectedItem();
                 Item userItem = (Item) cmb_course_user.getSelectedItem();
+                //Hatali bir patika veya egitmen secimi yapildiginda patikaItem veya userItem null olacaktir
+                //Bu yuzden null kontrolu yapmaliyiz
+
+                System.out.println("Patika ID: " + patikaItem.getKey());
+                System.out.println("User ID: " + userItem.getKey());
+                System.out.println("Course Name: " + fld_course_name.getText());
+                System.out.println("Course Lang: " + fld_course_lang.getText());
+
                 if (Course.add(userItem.getKey(), patikaItem.getKey(), fld_course_name.getText(), fld_course_lang.getText())) {
                     Helper.showMessage("Ders eklendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("Course add");
