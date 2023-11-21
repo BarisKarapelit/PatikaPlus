@@ -20,10 +20,17 @@ public class Patika {
 
     public static boolean delete(int id) {
         String query = Contanst.DELETE_QUERY_PATIKA;
+        ArrayList<Course> courseArrayList = Course.getList();
         try {
             PreparedStatement preparedStatement = DBConnector.getConnection().prepareStatement(query);
             preparedStatement.setInt(1, id);
-            return preparedStatement.executeUpdate() != -1;
+            if ( preparedStatement.executeUpdate() != -1){
+                for (Course course : courseArrayList) {
+                    if (course.getPatika_id() == id) {
+                       return Course.delete(course.getId());
+                    }
+                }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -88,8 +95,11 @@ public class Patika {
     }
 
     public static Patika getFetch(int id) {
-        Patika patika = null;
         String query = "SELECT * FROM patika WHERE id = '" + id + "'";
+        return getPatika(null, query);
+    }
+
+    private static Patika getPatika(Patika patika, String query) {
         try {
             Statement statement = DBConnector.getConnection().createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -103,20 +113,10 @@ public class Patika {
 
         return patika;
     }
-    public static Patika getFetch(String name){
+
+    public static Patika getFetch(String name) {
         Patika patika = null;
         String query = "SELECT * FROM patika WHERE name = '" + name + "'";
-        try {
-            Statement statement = DBConnector.getConnection().createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
-            if (resultSet.next()) {
-                patika = new Patika(resultSet.getInt("id"), resultSet.getString("name"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return patika;
+        return getPatika(patika, query);
     }
 }

@@ -164,7 +164,9 @@ public class User {
         try {
             Statement statement = DBConnector.getConnection().createStatement();
             int response = statement.executeUpdate(query);
-            return response > 0;
+            if (response > 0){
+                return Course.deleteUser(id);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -123,9 +123,12 @@ public class OperatorGUI extends JFrame {
                         Helper.showMessage("Kullanici guncellendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
                         System.out.println("User update");
                         addTableList(row_user_list);
+                        loadUserComboBox();
                     } else {
                         addTableList(row_user_list);
                     }
+                    loadUserComboBox();
+                    loadPatikaList();
                 }
             } catch (Exception exception) {
                 System.out.println(exception.getMessage());
@@ -190,10 +193,10 @@ public class OperatorGUI extends JFrame {
         //Model for course list
 
         mdl_course_list = new DefaultTableModel();
-        Object[] col_course_list = {"ID", "Ders Adi", "Patika", "Egitmen"};
+        Object[] col_course_list = {"ID", "Ders Adi", "Dil","Patika", "Egitmen"};
         mdl_course_list.setColumnIdentifiers(col_course_list);
-        row_course_list = new Object[col_course_list.length==4?col_course_list.length:4];
-        loadCourseList();
+        row_course_list = new Object[col_course_list.length==5?col_course_list.length:5];
+        loadCourseModel();
         tbl_course_list.setModel(mdl_course_list);
         tbl_course_list.getTableHeader().setReorderingAllowed(false);
         for (int i = 1; i < tbl_course_list.getColumnCount(); i++) {
@@ -218,8 +221,8 @@ public class OperatorGUI extends JFrame {
                     field_user_password.setText(null);
                     field_user_name.setText(null);
                     field_username.setText(null);
-
                 }
+                loadUserComboBox();
 
             }
         });
@@ -234,6 +237,7 @@ public class OperatorGUI extends JFrame {
                         System.out.println("User delete");
                         addTableList(row_user_list);
                         field_user_id.setText(null);
+                        loadUserComboBox();
                     } else {
                         Helper.showMessage("Kullanici silinemedi", "UYARI", JOptionPane.ERROR_MESSAGE);
                     }
@@ -278,15 +282,11 @@ public class OperatorGUI extends JFrame {
                 //Hatali bir patika veya egitmen secimi yapildiginda patikaItem veya userItem null olacaktir
                 //Bu yuzden null kontrolu yapmaliyiz
 
-                System.out.println("Patika ID: " + patikaItem.getKey());
-                System.out.println("User ID: " + userItem.getKey());
-                System.out.println("Course Name: " + fld_course_name.getText());
-                System.out.println("Course Lang: " + fld_course_lang.getText());
 
-                if (Course.add(userItem.getKey(), patikaItem.getKey(), fld_course_name.getText(), fld_course_lang.getText())) {
+                if (Course.add(patikaItem.getKey(),userItem.getKey(),  fld_course_name.getText(), fld_course_lang.getText())) {
                     Helper.showMessage("Ders eklendi", "BILGI", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("Course add");
-                    loadCourseList();
+                    loadCourseModel();
                     fld_course_name.setText(null);
                     fld_course_lang.setText(null);
 
@@ -295,16 +295,18 @@ public class OperatorGUI extends JFrame {
         });
     }
 
-    private void loadCourseList() {
+    private void loadCourseModel() {
         DefaultTableModel clearModel = (DefaultTableModel) tbl_course_list.getModel();
         clearModel.setRowCount(0);
         int i;
-        for (Course course : Course.getList()) {
+        System.out.println("Course List");
+        for (Course obj : Course.getList()) {
             i = 0;
-            row_course_list[i++] = course.getId();
-            row_course_list[i++] = course.getName();
-            row_course_list[i++] = course.getPatika().getName();
-            row_course_list[i++] = course.getEducator().getName();
+            row_course_list[i++] = obj.getId();
+            row_course_list[i++] = obj.getName();
+            row_course_list[i++] = obj.getLanguage();
+            row_course_list[i++] = obj.getPatika().getName();
+            row_course_list[i++] = obj.getEducator().getName();
             mdl_course_list.addRow(row_course_list);
         }
     }
