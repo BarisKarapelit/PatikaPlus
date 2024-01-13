@@ -1,0 +1,55 @@
+/* Global Stil Ayarları */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f0f0f0;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #4caf50;
+  padding: 15px;
+  color: white;
+  text-align: center;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  display: inline;
+  margin-right: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+/* Ana İçerik Alanı */
+#main-content {
+  margin: 20px;
+}
+
+/* Footer */
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Medya Sorguları (Responsive Tasarım) */
+@media only screen and (max-width: 600px) {
+  header {
+    padding: 10px;
+  }
+  nav li {
+    display: block;
+    margin: 10px 0;
+  }
+}
